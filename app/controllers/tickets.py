@@ -8,8 +8,8 @@ ticket_router = APIRouter(tags=["Tickets"])
 async def create_ticket(request: Request, ticket: Ticket):
     try:
         tickets_repository = request.app.state.ticket_repo
-        await tickets_repository.create_ticket(ticket)
-        return ticket.model_dump()
+        created = await tickets_repository.create_ticket(ticket)
+        return created.model_dump()
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error occurred while inserting ticket")
     
@@ -27,7 +27,7 @@ async def assign_ticket_to_user(request: Request, ticket_payload: AssignUser):
         else:
             raise HTTPException(status_code=500, detail=ErrorEnum.UNKONWN_ERROR.value)
         
-@ticket_router.get("/v1/tickets/:current_page/:page_size")        
+@ticket_router.get("/v1/tickets")        
 async def get_ticket_list(request: Request, current_page: int, page_size: int = 10):
     try:
         tickets_repository = request.app.state.ticket_repo
